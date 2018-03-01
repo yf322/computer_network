@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -33,7 +35,6 @@ void startServer(int port) {
     int sockfd, new_fd, sin_size, valread;
     int yes = 1;
     struct sockaddr_in address;
-    char* finack = "FINACK";
 
     cout << "Opening server with port number " << port << endl;
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
