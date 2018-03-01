@@ -66,20 +66,11 @@ void startServer(int port) {
         exit(1);
     }
 
-    long total = 0;
-    time_t start = time(NULL);
     while (1) {
         char buffer[1024] = {0};
         valread = recv(new_fd , buffer, 1024, 0);
-        if (valread > 0) total += strlen(buffer);
-        if (!(strstr(buffer, "FIN") == NULL)) {
-            //cout << "received FIN from client  " << buffer << endl;
-            send(new_fd, finack, strlen(finack), 0);
-            float t = float(time(NULL) - start);
-            cout << "duration for this connection is: " << t << " s"<<endl;
-            cout << "received=" << total/1000 << "KB rate=" << 8 * total/(1000000*t) << " Mbps" << endl;
-
-            break;
+        if (valread > 0) {
+            cout << buffer << endl;
         }
     }
 }
@@ -99,7 +90,7 @@ int main(int argc, char** argv) {
     port = atoi(argv[3]);
     www_ip = argv[4];
 
-    write2Log("log", 1, 1, 1, 1, "1.1.1.1", "test");
+    startServer(port);
 
 
     return 0;
