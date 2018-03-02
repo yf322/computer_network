@@ -127,10 +127,11 @@ int main(int argc, char** argv) {
         if (valread > 0) {
             send(server_sock, buffer, BUFF_SIZE, 0);
         }
-        valread = recv(server_sock , buffer, BUFF_SIZE, 0);
-        cout << buffer << "\n this is from server\n\n" << endl;
+        char buff[BUFF_SIZE] = {0};
+        valread = recv(server_sock , buff, BUFF_SIZE, 0);
+        cout << buff << "\n this is from server\n\n" << endl;
         if (valread > 0) {
-            send(client_sock, buffer, BUFF_SIZE, 0);
+            send(client_sock, buff, BUFF_SIZE, 0);
         }
     }
 
