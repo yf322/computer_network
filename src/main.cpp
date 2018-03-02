@@ -121,17 +121,18 @@ int main(int argc, char** argv) {
     server_sock = startClient(80, www_ip);
 
 
-    valread = recv(client_sock , buffer, BUFF_SIZE, 0);
-    cout << buffer << endl;
-    if (valread > 0) {
-        send(server_sock, buffer, BUFF_SIZE, 0);
+    while(1) {
+        valread = recv(client_sock , buffer, BUFF_SIZE, 0);
+        cout << buffer << endl;
+        if (valread > 0) {
+            send(server_sock, buffer, BUFF_SIZE, 0);
+        }
+        valread = recv(server_sock , buffer, BUFF_SIZE, 0);
+        cout << buffer << endl;
+        if (valread > 0) {
+            send(client_sock, buffer, BUFF_SIZE, 0);
+        }
     }
-    valread = recv(server_sock , buffer, BUFF_SIZE, 0);
-    cout << buffer << endl;
-    if (valread > 0) {
-        send(client_sock, buffer, BUFF_SIZE, 0);
-    }
-
 
     return 0;
 }
