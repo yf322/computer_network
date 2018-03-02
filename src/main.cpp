@@ -10,12 +10,13 @@ using std::fstream;
 using std::cout;
 using std::endl;
 
+const int BUFF_SIZE = 16384;
+
 void write2Log(char *path, float duration, float tput, float avg, int bitrate, char* server_ip, char* chunk_name) {
     ofstream log_file;
 
     log_file.open(path, fstream::out | fstream::app);
-    if(!log_file)
-    {
+    if(!log_file) {
         cout<<"Error in creating file!!!";
         exit(2);
     }
@@ -31,7 +32,7 @@ void write2Log(char *path, float duration, float tput, float avg, int bitrate, c
 
 }
 
-void startServer(int port) {
+int startServer(int port) {
     int sockfd, new_fd, sin_size, valread;
     int yes = 1;
     struct sockaddr_in address;
@@ -67,18 +68,44 @@ void startServer(int port) {
         exit(1);
     }
 
-    while (1) {
-        char buffer[1024] = {0};
-        valread = recv(new_fd , buffer, 1024, 0);
-        if (valread > 0) {
-            cout << buffer << endl;
-        }
+    return new_fd;
+}
+
+int startClient(int port, char* www_ip) {
+    struct sockaddr_in address;
+    int sock = 0, valread;
+    struct sockaddr_in serv_addr;
+    char buffer[1024] = {0};
+    char *fin = "FIN";
+
+    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+        printf("\n Socket creation error \n");
+        exit(1);
     }
+
+    memset(&serv_addr, '0', sizeof(serv_addr));
+
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(port);
+
+    // Convert IPv4 and IPv6 addresses from text to binary form
+    if(inet_pton(AF_INET, www_ip, &serv_addr.sin_addr)<=0) {
+        printf("\nInvalid address/ Address not supported \n");
+        exit(1);
+    }
+
+    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+        printf("\nConnection Failed \n");
+        exit(1);
+    }
+
+    return sock;
 }
 
 int main(int argc, char** argv) {
     char *log_path, *www_ip;
-    int port;
+    char buffer[16384] = {0};
+    int port, server_sock, client_sock, valread;
     float alpha;
 
     if (argc != 5) {
@@ -91,8 +118,20 @@ int main(int argc, char** argv) {
     port = atoi(argv[3]);
     www_ip = argv[4];
 
-    startServer(port);
+    client_sock = startServer(port);
+    server_sock = startClient(80, www_ip);
 
+
+    while(1) {
+        valread = recv(client_sock , buffer, BUFF_SIZE, 0);
+        if (valread > 0) {
+            send(server_sock, buffer, BUFF_SIZE, 0);
+        }
+        valread = recv(server_sock , buffer, BUFF_SIZE, 0);
+        if (valread > 0) {
+            send(client_sock, buffer, BUFF_SIZE, 0);
+        }
+    }
 
     return 0;
 }
