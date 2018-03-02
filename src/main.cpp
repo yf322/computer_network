@@ -121,18 +121,15 @@ int main(int argc, char** argv) {
     client_sock = startServer(port);
     server_sock = startClient(80, www_ip);
 
-
-    while(1) {
-        valread = recv(client_sock , buffer_client, BUFF_SIZE, 0);
-        cout << buffer_client << "\n this is from client\n\n" << endl;
-        if (valread > 0) {
-            send(server_sock, buffer_client, BUFF_SIZE, 0);
-        }
-        valread = recv(server_sock , buffer_server, BUFF_SIZE, 0);
-        cout << buffer_server << "\n this is from server\n\n" << endl;
-        if (valread > 0) {
-            send(client_sock, buffer_server, BUFF_SIZE, 0);
-        }
+    valread = recv(client_sock , buffer_client, BUFF_SIZE, 0);
+    cout << buffer_client << "\n this is from client\n\n" << endl;
+    if (valread > 0) {
+        send(server_sock, buffer_client, BUFF_SIZE, 0);
+    }
+    valread = recv(server_sock , buffer_server, BUFF_SIZE, 0);
+    cout << buffer_server << "\n this is from server\n\n" << endl;
+    if (valread > 0) {
+        send(client_sock, buffer_server, BUFF_SIZE, 0);
     }
 
     return 0;
