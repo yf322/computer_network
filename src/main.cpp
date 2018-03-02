@@ -103,7 +103,8 @@ int startClient(int port, char* www_ip) {
 
 int main(int argc, char** argv) {
     char *log_path, *www_ip;
-    char buffer[16384] = {0};
+    char buffer_client[BUFF_SIZE] = {0};
+    char buffer_server[BUFF_SIZE] = {0};
     int port, server_sock, client_sock, valread;
     float alpha;
 
@@ -122,16 +123,15 @@ int main(int argc, char** argv) {
 
 
     while(1) {
-        valread = recv(client_sock , buffer, BUFF_SIZE, 0);
-        cout << buffer << "\n this is from client\n\n" << endl;
+        valread = recv(client_sock , buffer_client, BUFF_SIZE, 0);
+        cout << buffer_client << "\n this is from client\n\n" << endl;
         if (valread > 0) {
-            send(server_sock, buffer, BUFF_SIZE, 0);
+            send(server_sock, buffer_client, BUFF_SIZE, 0);
         }
-        char buff[BUFF_SIZE] = {0};
-        valread = recv(server_sock , buff, BUFF_SIZE, 0);
-        cout << buff << "\n this is from server\n\n" << endl;
+        valread = recv(server_sock , buffer_server, BUFF_SIZE, 0);
+        cout << buffer_server << "\n this is from server\n\n" << endl;
         if (valread > 0) {
-            send(client_sock, buff, BUFF_SIZE, 0);
+            send(client_sock, buffer_server, BUFF_SIZE, 0);
         }
     }
 
