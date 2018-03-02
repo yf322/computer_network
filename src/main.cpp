@@ -105,7 +105,7 @@ int main(int argc, char** argv) {
     char *log_path, *www_ip;
     char buffer_client[BUFF_SIZE] = {0};
     char buffer_server[BUFF_SIZE] = {0};
-    int port, server_sock, client_sock, valread;
+    int port, server_sock, client_sock, valread, valsend;
     float alpha;
 
     if (argc != 5) {
@@ -131,7 +131,10 @@ int main(int argc, char** argv) {
         valread = recv(server_sock , buffer_server, BUFF_SIZE, 0);
         cout << buffer_server << "\n this is from server\n\n" << endl;
         if (valread > 0) {
-            send(client_sock, buffer_server, BUFF_SIZE, 0);
+            int valsend = send(client_sock, buffer_server, BUFF_SIZE, 0);
+            if (valsend < 0) {
+                exit(3);
+            }
         }
     }
 
